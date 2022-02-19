@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        .chart-container {
+            max-width: 1050px;
+            margin: 0 auto;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        svg {
+            overflow: visible;
+        }
+
+        h1 {
+            margin-top: 50px;
+            font-family: "Times";
+            font-size: 40px;
+            line-height: 40%;
+        }
+        h2 {
+            font-family: "Times";
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        p {
+            font-family: "Arial";
+        }
+        .x .tick line {
+            stroke: black;
+        }
+
+        .y .tick line {
+            stroke: #f0f0f0;
+        }
+
+        .x .domain {
+           display: none;
+        }
+
+        .y .domain {
+            display: none;
+        }
+
+        .y .tick text {
+            font-size: 11px;
+            font-family: sans-serif;
+            fill: #333;
+
+        }
+
+        .x .tick text {
+            font-size: 12px;
+            font-family: sans-serif;
+            fill: #333;
+        }
+
+        .subhead{
+            max-width:620px;
+            margin: 10px 0px;
+            font-family: 'Arial';
+            font-size: 14px;
+            color: black;
+            line-height: 1.25;   
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+
+
+    <div class="chart-container">
+        <h1 class="headline">
+            Tom Brady is the Playoff G.O.A.T
+        </h1>
+        <p class = "subhead">
+        After 22 years in the league and 7 superbowl rings, Tom Brady's success is best illustrated by comparing him to other greats.       
+        <h2>No. 1: Playoff Wins</h2>
+
+        <svg width="800px" height="700px"></svg>
+        </header>
+    </div>
+</body>
+
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<!-- we're using d3 version 6 (the latest version) for all out work -->
+
+<script>
+
+    let margin = { top: 30, right: 30, bottom: 30, left: 30 };
+    let width = 750;
+    let height = 550;
+
+    let sel_var_state = "year";
+    let sel_max = "year_end";
+
+    d3.csv("football-data.csv").then(function (data){
+        data.forEach(function (row) {
+            row["year"] = +row["year"]
+            row["age"] = +row["age"]
+            row["tot_wins"] = +row["tot_wins"]
+            row["playoff_wins"] = +row["playoff_wins"]
+            row["year_end"] = +row["year_end"]
+            row["year_start"] = +row["year_start"]
+
+        })
+
+        let svg = d3.select("body")
+            .select("svg")
+
+        let x = d3.scaleLinear()
+            .domain(d3.extent(data.map(function(d) { return d[sel_var_state]} )))
+            .range([margin.left, width-margin.right])
+
+        let y = d3.scaleLinear()
+            .domain(d3.extent(data.map(function(d) { return d.playoff_wins} )))
+            .range([height-margin.bottom, margin.top])
+
+        let xAxisSettings = d3.axisBottom(x)
+            .tickValues([1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020])
+            .tickSize(6)
+            .tickFormat(d3.format("d"))
+            .tickPadding(10)
+
+        let yAxisSettings = d3.axisRight(y)
+            .tickValues([5, 10, 15, 20, 25, 30, 35])
+            .tickSize(width-margin.right)
+            .tickPadding(10)
+
+        let yAxisTicks = svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxisSettings)
+
+        let xAxisTicks = svg.append("g")
+            .attr("class", "x axis")
+            .call(xAxisSettings)
+            .attr("transform", `translate(0, ${height - margin.bottom})`)
+
+        let line = d3.line()
+            .defined(d => !isNaN(d.playoff_wins))
+            .x(function (d) { return x(d.year)})
+            .y(function (d) { return y(d.playoff_wins)})
+
+        let player_data = d3.group(data, d => d.player_id)
+        let highlighted_players = ["StarBa00", "BradTe00", "TarkFr00", "MontJo01", "ElwaJo00"]
+        
+      
+        let line_path = svg.append("g")
+            .selectAll(".line")
+            .data(player_data)
+            .join("path")
+            .attr("class", function(d) { return "line " +  d[0] })
+            .attr("d", function(d) { return line(d[1]) })
+            .style("fill", "none")
+            .style("stroke", d => {
+                if ( d[1].slice(-1)[0]["year"] >= 2021) { 
+                    return "#54b3e5" }
+                else if ( highlighted_players.indexOf(d[0]) >= 0){ 
+                    return "#6b6b6b" }
+                else { 
+                    return "#d6d6d6"}} )
+            .style("stroke-width", d => {
+                if(d[0] == "BradTo00") { 
+                    return "3px"
+                } 
+                else { 
+                    return "1px"
+                }
+            })
+
+        brady = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 686)
+            .attr("y", 22)
+            .text("Brady")
+            .style("fill", "#54b3e5") 
+            .attr("font-size", "18px")
+     
+        
+        tarkenton = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 295)
+            .attr("y", 440)
+            .text("Tarkenton")
+            .style("fill", "black")
+
+        starr = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 230)
+            .attr("y", 400)
+            .text("Starr")
+            .style("fill", "black")  
+        
+        bradshaw = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 340)
+            .attr("y", 330)
+            .text("Bradshaw")
+            .style("fill", "black") 
+
+        montana = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 459)
+            .attr("y", 302)
+            .text("Montana")
+            .style("fill", "black") 
+
+        elway = svg.append("text")
+            .attr("class", "label")
+            .attr("x", 470)
+            .attr("y", 327)
+            .text("Elway")
+            .style("fill", "black")   
+               
+        let baseline = svg.append("line")
+            .attr("x1", margin.left)
+            .attr("x2", width)
+            .attr("y1", y(0))
+            .attr("y2", y(0))
+            .style("stroke", "black")
+            .style("stroke-width", "1.5px")
+
+        
+        })
+
+
+
+</script>
