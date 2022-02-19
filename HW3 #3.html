@@ -49,7 +49,6 @@
             font-size: 11px;
             font-family: sans-serif;
             fill: #333;
-
         }
 
         .x .tick text {
@@ -148,8 +147,7 @@
             .y(function (d) { return y(d.playoff_wins)})
 
         let player_data = d3.group(data, d => d.player_id)
-        let highlighted_players = ["StarBa00", "BradTe00", "TarkFr00", "MontJo01", "ElwaJo00"]
-        
+        let highlight_players = ["StarBa00", "BradTe00", "TarkFr00", "MontJo01", "ElwaJo00"]
       
         let line_path = svg.append("g")
             .selectAll(".line")
@@ -161,7 +159,7 @@
             .style("stroke", d => {
                 if ( d[1].slice(-1)[0]["year"] >= 2021) { 
                     return "#54b3e5" }
-                else if ( highlighted_players.indexOf(d[0]) >= 0){ 
+                else if ( highlight_players.indexOf(d[0]) >= 0){ 
                     return "#6b6b6b" }
                 else { 
                     return "#d6d6d6"}} )
@@ -181,7 +179,6 @@
             .text("Brady")
             .style("fill", "#54b3e5") 
             .attr("font-size", "18px")
-     
         
         tarkenton = svg.append("text")
             .attr("class", "label")
