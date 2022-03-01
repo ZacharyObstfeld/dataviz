@@ -29,7 +29,7 @@
 <body>
     <div class="chart-container">
         <h1 class="headline">
-            D3 starter template
+            Map of Child Poverty in US Counties
         </h1>
 
         <svg width="1050px" height="500px">
@@ -102,15 +102,16 @@
             .style("stroke-width", 1)
             .style("pointer-events", "none")
 
-        let scaleFuntion = d3.scaleSqrt()    
-            .domain([])
-            .domain([])
+        //let scaleFuntion = d3.scaleSqrt()    
+        //    .domain([])
+         //   .domain([])
 
         let counties = svg
             .selectAll(".counties")
             .data(county.features)
             .join("circle")
-            .attr("r", d => scaleFunction(d))
+          //  .attr("r", d => scaleFunction(d))
+            .attr("r", 5)
             .attr("cx", d => {
                 return path.centroid(d)[0]
             })
@@ -121,6 +122,10 @@
             .style("stroke", "#ccc")
             .style("stroke-width", .2)
     }
+
+
+
+
 
 
 
